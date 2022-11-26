@@ -39,12 +39,26 @@ const run = async() => {
             res.send(category);
         })
 
-
+        // Get Single User By Email
         app.get('/user', async(req, res) => {
             const email = req.query.email;
             const query = {email};
             const user = await usersCollection.findOne(query);
             res.send(user);
+        })
+
+        app.get('/users', async(req,res) => {
+            const role = req.query.role;
+            const query = {role: role};
+
+            if(role === 'seller'){
+                const all_sellers = await usersCollection.find(query).toArray();
+                res.send(all_sellers);
+            }
+            if(role === 'buyer'){
+                const all_buyer = await usersCollection.find(query).toArray();
+                res.send(all_buyer);
+            }
         })
 
         app.post('/users', async(req, res) => {

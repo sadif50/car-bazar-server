@@ -20,6 +20,7 @@ const run = async() => {
         const categoriesCollection = client.db('CarBazar').collection('categories');
         const usersCollection = client.db('CarBazar').collection('users');
         const productCollection = client.db('CarBazar').collection('products');
+        const bookingCollection = client.db('CarBazar').collection('booking');
 
         // Get All Category
         app.get('/categories', async(req, res) => {
@@ -42,14 +43,6 @@ const run = async() => {
             const query = {category: category_name};
             const category_data = await productCollection.find(query).toArray();
             res.send(category_data);
-        })
-
-        // Get Product by Seller Email
-        app.get('/product', async(req, res) => {
-            const seller_email = req.query.seller_email;
-            const query = {seller_email};
-            const sellerProduct = await productCollection.find(query).toArray();
-            res.send(sellerProduct);
         })
 
         // Get Single User By Email
@@ -84,11 +77,29 @@ const run = async() => {
             const user = req.body;
             const result = await productCollection.insertOne(user)
             res.send(result);
-        })
+        });
+
+        // Get all products and Seller wise products
         app.get('/products', async(req, res) => {
-            const query = {};
-            const products = await productCollection.find(query).toArray();
-            res.send(products);
+            const seller_email = req.query.seller_email;
+            if(seller_email){
+                const query = {seller_email};
+                const sellerProduct = await productCollection.find(query).toArray();
+                res.send(sellerProduct);
+            }
+            else {
+                const query = {};
+                const products = await productCollection.find(query).toArray();
+                res.send(products);
+            }
+            
+        });
+
+        // Booking data store to server
+        app.post('/booking', async(req, res) => {
+            const bookingdata = req.body;
+            const result = await bookingCollection.insertOne(bookingdata);
+            res.send(result);
         })
     }
     finally{

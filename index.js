@@ -21,22 +21,35 @@ const run = async() => {
         const usersCollection = client.db('CarBazar').collection('users');
         const productCollection = client.db('CarBazar').collection('products');
 
+        // Get All Category
         app.get('/categories', async(req, res) => {
             const query = {}
             const categories = await categoriesCollection.find(query).toArray();
             res.send(categories);
         })
+
+        // Find One Specific Category
+        app.get('/category/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const category = await categoriesCollection.findOne(query);
+            res.send(category);
+        })
+
+        // Get Product By Category Name
         app.get('/category', async(req, res) => {
             const category_name = req.query.category_name;
             const query = {category: category_name};
             const category_data = await productCollection.find(query).toArray();
             res.send(category_data);
         })
-        app.get('/category/:id', async(req, res) => {
-            const id = req.params.id;
-            const query = {_id: ObjectId(id)};
-            const category = await categoriesCollection.findOne(query);
-            res.send(category);
+
+        // Get Product by Seller Email
+        app.get('/product', async(req, res) => {
+            const seller_email = req.query.seller_email;
+            const query = {seller_email};
+            const sellerProduct = await productCollection.find(query).toArray();
+            res.send(sellerProduct);
         })
 
         // Get Single User By Email
@@ -47,10 +60,10 @@ const run = async() => {
             res.send(user);
         })
 
+        // get all seller and all buyers seperetly
         app.get('/users', async(req,res) => {
             const role = req.query.role;
             const query = {role: role};
-
             if(role === 'seller'){
                 const all_sellers = await usersCollection.find(query).toArray();
                 res.send(all_sellers);

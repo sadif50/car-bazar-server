@@ -71,7 +71,27 @@ const run = async() => {
             const user = req.body;
             const result = await usersCollection.insertOne(user)
             res.send(result);
-        })
+        });
+
+        // Delete a user
+        app.delete('/user/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await usersCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        app.patch('/verifySeller/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const verify = req.body;
+            const updateVerify = {
+                $set: verify
+            }
+            const updateProduct = await productCollection.updateMany({seller_id:id}, updateVerify);
+            const result = await usersCollection.updateOne(query, updateVerify);
+            res.send(result);
+        });
 
         app.post('/addProduct', async(req, res) => {
             const user = req.body;
@@ -101,11 +121,10 @@ const run = async() => {
             const updateData = {
                 $set: product
             }
-            console.log(updateData, query);
 
             const result = await productCollection.updateOne(query, updateData);
             res.send(result);
-        })
+        });
 
         
         // Booking data store to server

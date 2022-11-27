@@ -88,19 +88,50 @@ const run = async() => {
                 res.send(sellerProduct);
             }
             else {
-                const query = {};
+                const query = {advertise: true, sold: false};
                 const products = await productCollection.find(query).toArray();
                 res.send(products);
             }
             
         });
 
+        app.patch('/product/:id', async(req, res) => {
+            const query = {_id: ObjectId(req.params.id)}
+            const product = req.body;
+            const updateData = {
+                $set: product
+            }
+            console.log(updateData, query);
+
+            const result = await productCollection.updateOne(query, updateData);
+            res.send(result);
+        })
+
+        
         // Booking data store to server
         app.post('/booking', async(req, res) => {
             const bookingdata = req.body;
             const result = await bookingCollection.insertOne(bookingdata);
             res.send(result);
         })
+
+        app.delete('/product/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACESS_TOKEN_SECRET, { expiresIn: '1h' })
+                return res.send({ accessToken: token });
+            }
+            res.status(403).send({ accessToken: '' });
+        });
     }
     finally{
 

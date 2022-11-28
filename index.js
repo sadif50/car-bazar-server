@@ -17,6 +17,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 const run = async() => {
     try{
+        // Collections
         const categoriesCollection = client.db('CarBazar').collection('categories');
         const usersCollection = client.db('CarBazar').collection('users');
         const productCollection = client.db('CarBazar').collection('products');
@@ -67,6 +68,7 @@ const run = async() => {
             }
         })
 
+        // Add user
         app.post('/users', async(req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user)
@@ -81,6 +83,7 @@ const run = async() => {
             res.send(result);
         });
 
+        // Verify Seller and Same Seller on product
         app.patch('/verifySeller/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)}
@@ -93,6 +96,7 @@ const run = async() => {
             res.send(result);
         });
 
+        // Add Product
         app.post('/addProduct', async(req, res) => {
             const user = req.body;
             const result = await productCollection.insertOne(user)
@@ -115,6 +119,7 @@ const run = async() => {
             
         });
 
+        // Update product advertise status
         app.patch('/product/:id', async(req, res) => {
             const query = {_id: ObjectId(req.params.id)}
             const product = req.body;
@@ -134,6 +139,7 @@ const run = async() => {
             res.send(result);
         })
 
+        // Delete Product
         app.delete('/product/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
@@ -141,6 +147,7 @@ const run = async() => {
             res.send(result);
         });
 
+        // JWT token
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const query = { email: email };

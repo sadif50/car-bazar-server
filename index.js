@@ -139,6 +139,16 @@ const run = async() => {
             res.send(result);
         })
 
+        // get booked product
+        app.get('/myorders', async(req, res) => {
+            const email = req.query.email;
+            const query = {
+                email: email
+            }
+            const myorders = await bookingCollection.find(query).toArray();
+            res.send(myorders);
+        })
+
         // Delete Product
         app.delete('/product/:id', async(req, res) => {
             const id = req.params.id;
